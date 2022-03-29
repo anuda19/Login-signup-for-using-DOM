@@ -1,0 +1,64 @@
+<script>
+const showSignupBtn = document.getElementById('showSignupBtn');
+const showLoginBtn = document.getElementById('showLoginBtn');
+const signupForm = document.getElementById('signupForm');
+const loginForm = document.getElementById('loginForm');
+const signupUsername = document.getElementById('signupUsername');
+const signupPassword = document.getElementById('signupPassword');
+const signupBtn = document.getElementById('signupBtn');
+
+function showSignup() {
+    signupForm.classList.remove('d-none');
+    loginForm.classList.add('d-none');    
+}
+
+function showLogin() {
+    signupForm.classList.add('d-none');
+    loginForm.classList.remove('d-none');
+}
+
+const BASE_URL = 'http://13.235.87.215:4000';
+
+function signupFn(msg){
+    if(signupUsername.value == ""){
+        updateAuthErrMsg('Username Should not be empty');
+    } else if(signupPassword.value == ""){
+        updateAuthErrMsg('Password should not be empty');
+    } else {
+        const data = {
+            username: signupUsername.value,
+            password: signupPassword.value
+        }
+        fetch(BASE_URL + '/api/v1/user/signup', {
+            method: 'POST',
+            header: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json)
+        .then(data => {
+            console.log('Success', data)
+            if(data.success){
+                localStorage.getItem("username", data.data.username);
+                localStorage.getItem("userId", data.data.userId);
+                window.location.href = "index.html"
+            } else {
+                updateAuthErrMsg(data.msg)
+            }
+        })
+        .catch((error) => {
+            console.log('Error', error);
+        })
+    }
+}
+
+function updateAuthErrMsg(msg){
+    authErrMsg.innerText = msg;
+}
+
+showSignupBtn.addEventListener('click', showSignup);
+showLoginBtn.addEventListener('click', showLogin);
+signupBtn.addEventListener('click', signupFn);
+
+</script>
